@@ -143,11 +143,11 @@ async function healthCheck(): Promise<void> {
   const result = await apiClient.safeCall(() => apiClient.getServerInfo())
 
   if (!result.success) {
-    originalError("[fatal] Health check failed:", result.error)
+    originalError("[warn] Health check failed:", result.error)
     originalError(
-      "[fatal] Please verify your LEADLOADZ_API_KEY is correct and the API is accessible."
+      "[warn] Please verify your LEADLOADZ_API_KEY is correct and the API is accessible."
     )
-    process.exit(1)
+    return
   }
 
   const info = result.data
