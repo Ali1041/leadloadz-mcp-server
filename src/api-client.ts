@@ -1,4 +1,4 @@
-import type { APIClientConfig, Tool, ServerInfo, ToolCallResponse } from "./types.js"
+import type { APIClientConfig, Tool, ServerInfo, ToolCallResponse, JsonRpcResponse } from "./types.js"
 import { MCPErrorCode } from "./types.js"
 
 /**
@@ -97,8 +97,8 @@ export class LeadloadzAPIClient {
       )
     }
 
-    const data = await response.json()
-    return data as ServerInfo
+    const data = (await response.json()) as unknown as ServerInfo
+    return data
   }
 
   /**
@@ -123,13 +123,13 @@ export class LeadloadzAPIClient {
       )
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as unknown as JsonRpcResponse<{ tools: Tool[] }>
 
     if (data.error) {
       throw new Error(data.error.message || "Failed to fetch tool list")
     }
 
-    return (data.result?.tools || []) as Tool[]
+    return data.result?.tools || []
   }
 
   /**
