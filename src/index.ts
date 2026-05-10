@@ -113,30 +113,30 @@ async function fetchTools(): Promise<void> {
     cachedTools = [
       {
         name: "search_leads",
-        description: "Search for B2B leads using natural language queries",
+        description: "Search indexed B2B contacts by role, company, location, or technology. Read-only; returns verified leads with deliverability scores. Requires API key. Rate limit: 30/min per user. Use verify_email after discovery to confirm deliverability before outreach.",
         inputSchema: {
           type: "object" as const,
           properties: {
-            query: { type: "string", description: "Search query" },
-            limit: { type: "number", description: "Max results (default: 10, max: 50)", minimum: 1, maximum: 50 }
+            query: { type: "string", description: "Specific natural-language search query. Narrow criteria yield better precision (e.g., 'CTOs at Series A B2B SaaS in London')" },
+            limit: { type: "number", description: "Maximum results to return. Default: 10. Cap: 50. Higher values consume more quota.", minimum: 1, maximum: 50 }
           },
           required: ["query"]
         }
       },
       {
         name: "verify_email",
-        description: "Verify an email address in real-time",
+        description: "Check email deliverability in real-time: MX records, SMTP, disposable/role detection. Read-only. Requires API key. Rate limit: 30/min per user. Use after search_leads or before sending campaigns. Returns deliverability score and risk assessment.",
         inputSchema: {
           type: "object" as const,
           properties: {
-            email: { type: "string", description: "Email to verify" }
+            email: { type: "string", description: "Single email address to verify. Must be a valid RFC-like address format." }
           },
           required: ["email"]
         }
       },
       {
         name: "get_user_stats",
-        description: "Get user usage statistics",
+        description: "Read current usage counters: searches performed, emails verified, and remaining quota. Read-only. Requires API key. Rate limit: 30/min per user. Use before batch operations to check available allowance.",
         inputSchema: {
           type: "object" as const,
           properties: {}
