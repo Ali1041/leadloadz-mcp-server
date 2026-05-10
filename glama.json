@@ -2,5 +2,87 @@
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "maintainers": [
     "Ali1041"
-  ]
+  ],
+  "docker": {
+    "baseImage": "node:20-alpine",
+    "buildSteps": [
+      "Install dumb-init for signal handling",
+      "Copy package.json and package-lock.json",
+      "Run npm ci --only=production",
+      "Copy pre-built dist/ directory",
+      "Create non-root user (leadloadz)",
+      "Set proper file ownership"
+    ],
+    "cmd": ["dumb-init", "--", "node", "dist/index.js"],
+    "entrypoint": ["dumb-init", "--"],
+    "exposedPorts": [],
+    "healthCheck": {
+      "command": "node -e \"console.log('health check')\"",
+      "interval": "30s",
+      "timeout": "10s",
+      "retries": 3,
+      "startPeriod": "5s"
+    },
+    "user": "leadloadz:nodejs"
+  },
+  "environmentVariables": {
+    "LEADLOADZ_API_KEY": {
+      "description": "Your Leadloadz API token for authentication",
+      "required": true,
+      "type": "string",
+      "secret": true,
+      "placeholder": "llz_your_api_key_here"
+    },
+    "LEADLOADZ_API_BASE": {
+      "description": "Base URL for the Leadloadz API",
+      "required": false,
+      "type": "string",
+      "default": "https://www.leadloadz.com/api/mcp",
+      "placeholder": "https://www.leadloadz.com/api/mcp"
+    },
+    "LEADLOADZ_TIMEOUT_MS": {
+      "description": "Request timeout in milliseconds",
+      "required": false,
+      "type": "number",
+      "default": 30000,
+      "placeholder": "30000"
+    },
+    "NODE_ENV": {
+      "description": "Node environment",
+      "required": false,
+      "type": "string",
+      "default": "production",
+      "placeholder": "production"
+    }
+  },
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
+      "LEADLOADZ_API_KEY": {
+        "type": "string",
+        "description": "Your Leadloadz API token",
+        "minLength": 1
+      },
+      "LEADLOADZ_API_BASE": {
+        "type": "string",
+        "format": "uri",
+        "description": "Leadloadz API base URL",
+        "default": "https://www.leadloadz.com/api/mcp"
+      },
+      "LEADLOADZ_TIMEOUT_MS": {
+        "type": "integer",
+        "description": "Request timeout in milliseconds",
+        "default": 30000,
+        "minimum": 1000
+      }
+    },
+    "required": ["LEADLOADZ_API_KEY"]
+  },
+  "placeholderParameters": {
+    "apiKey": {
+      "description": "Leadloadz API key for authentication",
+      "example": "llz_live_abc123def456",
+      "required": true
+    }
+  }
 }
