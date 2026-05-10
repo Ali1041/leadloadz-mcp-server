@@ -1,0 +1,60 @@
+{
+  "name": "@leadloadz/mcp-server",
+  "version": "1.0.2",
+  "description": "MCP server for Leadloadz B2B lead search and email verification",
+  "license": "MIT",
+  "author": "Leadloadz <support@leadloadz.com>",
+  "homepage": "https://leadloadz.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ali1041/leadloadz-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ali1041/leadloadz-mcp-server/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "lead-generation",
+    "b2b",
+    "email-verification",
+    "lead-search"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "leadloadz-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "!dist/**/__tests__",
+    "!dist/**/*.test.*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && npm run postbuild",
+    "postbuild": "chmod +x dist/index.js",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^22",
+    "jest": "^30.0.0",
+    "ts-jest": "^29.2.0",
+    "typescript": "^5"
+  }
+}
