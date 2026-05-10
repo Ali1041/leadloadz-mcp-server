@@ -44,7 +44,7 @@ export class LeadloadzAPIClient {
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
         throw new Error(
-          `Request timed out after ${this.config.timeoutMs}ms. The Leadloadz API may be temporarily unavailable.`
+          `Request timed out after ${this.config.timeoutMs}ms. The Leadloadz API may be temporarily unavailable.`, { cause: err }
         )
       }
       throw err

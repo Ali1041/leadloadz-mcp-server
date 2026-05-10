@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 /**
  * Leadloadz MCP Server
  *
@@ -26,7 +25,6 @@
  *     }
  *   }
  */
-
 import { Server } from "@modelcontextprotocol/sdk/server/index.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
@@ -35,23 +33,18 @@ import {
 } from "@modelcontextprotocol/sdk/types.js"
 import { LeadloadzAPIClient } from "./api-client.js"
 import type { Tool } from "./types.js"
-import { MCPErrorCode } from "./types.js"
-
 // ─── Prevent stdout pollution ────────────────────────────────────────────────
 // The stdio transport uses stdout for JSON-RPC messages. Any other writes
 // to stdout (console.log, stray dependency output) will corrupt the stream.
 // We redirect all console methods to stderr.
-
-const originalLog = console.log
-const originalInfo = console.info
-const originalWarn = console.warn
+// const originalLog = console.log
+// const originalInfo = console.info
+// const originalWarn = console.warn
 const originalError = console.error
-
 console.log = (...args: unknown[]) => originalError("[log]", ...args)
 console.info = (...args: unknown[]) => originalError("[info]", ...args)
 console.warn = (...args: unknown[]) => originalError("[warn]", ...args)
 // console.error stays on stderr (no change needed)
-
 // Also catch any unhandled errors and write to stderr
 // Sanitize errors to prevent leaking sensitive info (stack traces, file paths)
 function sanitizeFatalError(err: unknown): string {
@@ -62,24 +55,19 @@ function sanitizeFatalError(err: unknown): string {
   }
   return String(err)
 }
-
 process.on("uncaughtException", (err) => {
   originalError("[fatal] Uncaught exception:", sanitizeFatalError(err))
   process.exit(1)
 })
-
 process.on("unhandledRejection", (reason) => {
   originalError("[fatal] Unhandled rejection:", sanitizeFatalError(reason))
   process.exit(1)
 })
-
 // ─── Configuration ───────────────────────────────────────────────────────────
-
 const API_KEY = process.env.LEADLOADZ_API_KEY
 const API_BASE =
   process.env.LEADLOADZ_API_BASE || "https://www.leadloadz.com/api/mcp"
 const TIMEOUT_MS = parseInt(process.env.LEADLOADZ_TIMEOUT_MS || "30000", 10)
-
 if (!API_KEY) {
   originalError(
     "[fatal] LEADLOADZ_API_KEY environment variable is required.\n" +
@@ -88,7 +76,6 @@ if (!API_KEY) {
   )
   process.exit(1)
 }
-
 // Validate API base URL to prevent SSRF attacks
 // Only allow HTTPS URLs to ensure API keys are never sent over plaintext
 try {
@@ -108,23 +95,17 @@ try {
   )
   process.exit(1)
 }
-
 // ─── API Client ──────────────────────────────────────────────────────────────
-
 const apiClient = new LeadloadzAPIClient({
   baseUrl: API_BASE,
   apiKey: API_KEY,
   timeoutMs: TIMEOUT_MS,
 })
-
 // ─── Tool Cache ──────────────────────────────────────────────────────────────
 // We fetch tools from the API at startup to avoid schema duplication.
-
 let cachedTools: Tool[] = []
-
 async function fetchTools(): Promise<void> {
   const result = await apiClient.safeCall(() => apiClient.listTools())
-
   if (!result.success) {
     originalError("[warn] Failed to fetch tool list from Leadloadz API:", result.error)
     originalError("[warn] Using default tool configuration. API may be temporarily unavailable.")
@@ -164,19 +145,14 @@ async function fetchTools(): Promise<void> {
     ]
     return
   }
-
   cachedTools = result.data
   originalError(`[info] Loaded ${cachedTools.length} tools from Leadloadz API`)
 }
-
 // ─── Health Check ────────────────────────────────────────────────────────────
 // Validate API connectivity and credentials on startup.
-
 async function healthCheck(): Promise<void> {
   originalError("[info] Performing startup health check...")
-
   const result = await apiClient.safeCall(() => apiClient.getServerInfo())
-
   if (!result.success) {
     originalError("[warn] Health check failed:", result.error)
     originalError(
@@ -184,15 +160,12 @@ async function healthCheck(): Promise<void> {
     )
     return
   }
-
   const info = result.data
   originalError(`[info] Connected to Leadloadz API: ${info.name} v${info.version}`)
   originalError(`[info] Available tools: ${info.tools.join(", ")}`)
   originalError(`[info] Rate limit: ${info.usage.rate_limit}`)
 }
-
 // ─── MCP Server Setup ────────────────────────────────────────────────────────
-
 const server = new Server(
   {
     name: "leadloadz-mcp",
@@ -204,7 +177,6 @@ const server = new Server(
     },
   }
 )
-
 // List available tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -215,11 +187,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     })),
   }
 })
-
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params
-
   // Validate tool exists
   const tool = cachedTools.find((t) => t.name === name)
   if (!tool) {
@@ -239,10 +209,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       isError: true,
     }
   }
-
   // Call the API
   const result = await apiClient.safeCall(() => apiClient.callTool(name, args || {}))
-
   if (!result.success) {
     return {
       content: [
@@ -254,9 +222,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       isError: true,
     }
   }
-
   const response = result.data
-
   // Check for JSON-RPC error in the response
   if (response.error) {
     return {
@@ -276,7 +242,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       isError: true,
     }
   }
-
   // Return successful result
   return {
     content: [
@@ -287,20 +252,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     ],
   }
 })
-
 // ─── Main ────────────────────────────────────────────────────────────────────
-
 async function main() {
   // Startup sequence: health check, then fetch tools, then start server
   await healthCheck()
   await fetchTools()
-
   const transport = new StdioServerTransport()
   await server.connect(transport)
-
   originalError("[info] Leadloadz MCP server running on stdio")
 }
-
 main().catch((err) => {
   originalError("[fatal] Server failed to start:", sanitizeFatalError(err))
   process.exit(1)
