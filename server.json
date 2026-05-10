@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.ali1041/leadloadz",
-  "description": "MCP server for Leadloadz B2B lead search and email verification. Connects AI assistants to 5M+ verified B2B contacts with real-time email verification.",
+  "name": "io.github.Ali1041/leadloadz",
+  "description": "B2B lead search and email verification MCP server",
   "repository": {
     "url": "https://github.com/Ali1041/leadloadz-mcp-server",
     "source": "github"
@@ -17,7 +17,7 @@
       },
       "environmentVariables": [
         {
-          "description": "Your Leadloadz API key from https://www.leadloadz.com/dashboard/api-tokens",
+          "description": "Your Leadloadz API key",
           "isRequired": true,
           "format": "string",
           "isSecret": true,

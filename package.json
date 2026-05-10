@@ -1,7 +1,7 @@
 {
   "name": "@leadloadz/mcp-server",
   "version": "1.0.3",
-  "mcpName": "io.github.ali1041/leadloadz",
+  "mcpName": "io.github.Ali1041/leadloadz",
   "description": "MCP server for Leadloadz B2B lead search and email verification",
   "license": "MIT",
   "author": "Leadloadz <support@leadloadz.com>",
