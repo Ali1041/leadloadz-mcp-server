@@ -126,8 +126,43 @@ async function fetchTools(): Promise<void> {
   const result = await apiClient.safeCall(() => apiClient.listTools())
 
   if (!result.success) {
-    originalError("[fatal] Failed to fetch tool list from Leadloadz API:", result.error)
-    process.exit(1)
+    originalError("[warn] Failed to fetch tool list from Leadloadz API:", result.error)
+    originalError("[warn] Using default tool configuration. API may be temporarily unavailable.")
+    // Use hardcoded tools as fallback when API is rate-limited
+    cachedTools = [
+      {
+        name: "search_leads",
+        description: "Search for B2B leads using natural language queries",
+        inputSchema: {
+          type: "object" as const,
+          properties: {
+            query: { type: "string", description: "Search query" },
+            limit: { type: "number", description: "Max results (default: 10, max: 50)", minimum: 1, maximum: 50 }
+          },
+          required: ["query"]
+        }
+      },
+      {
+        name: "verify_email",
+        description: "Verify an email address in real-time",
+        inputSchema: {
+          type: "object" as const,
+          properties: {
+            email: { type: "string", description: "Email to verify" }
+          },
+          required: ["email"]
+        }
+      },
+      {
+        name: "get_user_stats",
+        description: "Get user usage statistics",
+        inputSchema: {
+          type: "object" as const,
+          properties: {}
+        }
+      }
+    ]
+    return
   }
 
   cachedTools = result.data
