@@ -1,5 +1,7 @@
 # @leadloadz/mcp-server
 
+
+[![leadloadz-mcp-server MCP server](https://glama.ai/mcp/servers/Ali1041/leadloadz-mcp-server/badges/card.svg)](https://glama.ai/mcp/servers/Ali1041/leadloadz-mcp-server) [![leadloadz-mcp-server MCP server](https://glama.ai/mcp/servers/Ali1041/leadloadz-mcp-server/badges/score.svg)](https://glama.ai/mcp/servers/Ali1041/leadloadz-mcp-server)
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that connects AI assistants to the [Leadloadz](https://www.leadloadz.com) B2B lead generation platform.
 
 ## Features
