@@ -21,7 +21,8 @@ export class LeadloadzAPIClient {
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.config.apiKey}`,
-      "User-Agent": "leadloadz-mcp-server/1.0.0",
+      "User-Agent": "leadloadz-mcp-server/1.1.0",
+      "X-Source": "mcp-server",
     }
   }
 

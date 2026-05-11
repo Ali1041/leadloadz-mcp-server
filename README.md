@@ -7,6 +7,24 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that co
 - **Search Leads** — Find verified B2B leads using natural language queries
 - **Verify Email** — Real-time email verification with deliverability scoring
 - **Get Stats** — Check your usage and remaining quotas
+- **Interactive Setup** — Built-in wizard to get your API key
+- **Anonymous Telemetry** — Helps us improve the product (no PII, opt-out via `LEADLOADZ_DISABLE_TELEMETRY=1`)
+
+## Quick Start
+
+### Don't have an API key yet?
+
+Run the setup wizard:
+
+```bash
+npx @leadloadz/mcp-server --setup
+```
+
+This will guide you through creating an account and getting your API key.
+
+### Already have an API key?
+
+Add it to your MCP client configuration (see below) and start using Leadloadz directly.
 
 ## Installation
 
@@ -91,6 +109,7 @@ Any MCP client that supports stdio transport can use:
 | `LEADLOADZ_API_KEY` | **Yes** | — | Your Leadloadz API token |
 | `LEADLOADZ_API_BASE` | No | `https://www.leadloadz.com/api/mcp` | API base URL |
 | `LEADLOADZ_TIMEOUT_MS` | No | `30000` | Request timeout in milliseconds |
+| `LEADLOADZ_DISABLE_TELEMETRY` | No | `0` | Set to `1` to disable anonymous usage telemetry |
 
 ## Tools
 

@@ -91,7 +91,20 @@ describe("LeadloadzAPIClient", () => {
       const callArgs = (fetch as jest.Mock).mock.calls[0]
       expect(callArgs[1].headers).toHaveProperty(
         "User-Agent",
-        "leadloadz-mcp-server/1.0.0"
+        "leadloadz-mcp-server/1.1.0"
+      )
+    })
+
+    it("should include X-Source header", async () => {
+      mockFetch({ ok: true, json: () => Promise.resolve({}) })
+
+      const client = createClient()
+      await client.getServerInfo()
+
+      const callArgs = (fetch as jest.Mock).mock.calls[0]
+      expect(callArgs[1].headers).toHaveProperty(
+        "X-Source",
+        "mcp-server"
       )
     })
   })
