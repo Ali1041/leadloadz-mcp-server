@@ -7,7 +7,7 @@
  *
  * Environment variables:
  *   LEADLOADZ_API_KEY  - Required. Your Leadloadz API token.
- *   LEADLOADZ_API_BASE - Optional. API base URL (default: https://www.leadloadz.com/api/mcp)
+ *   LEADLOADZ_API_BASE - Optional. API base URL (default: https://leadloadz.com/api/mcp)
  *
  * Usage:
  *   npx @leadloadz/mcp-server
@@ -40,6 +40,7 @@ import type { Tool } from "./types.js"
 import { redirectConsoleToStderr, stderrLog, sanitizeFatalError } from "./logger.js"
 import { isSetupMode, showSetupCTA, runSetupWizard } from "./onboarding.js"
 import { TelemetryTracker, generateSessionId } from "./telemetry.js"
+import { DEFAULT_API_BASE, normalizeApiBase } from "./config.js"
 
 // ─── Redirect stdout pollution to stderr BEFORE anything else ─────────────────
 redirectConsoleToStderr()
@@ -57,8 +58,9 @@ process.on("unhandledRejection", (reason) => {
 // ─── Setup mode guard ────────────────────────────────────────────────────────
 // If --setup or --wizard is passed, run the onboarding wizard and exit.
 // This MUST happen before any server setup to avoid polluting stdout.
-const API_BASE =
-  process.env.LEADLOADZ_API_BASE || "https://www.leadloadz.com/api/mcp"
+const API_BASE = normalizeApiBase(
+  process.env.LEADLOADZ_API_BASE || DEFAULT_API_BASE
+)
 const TIMEOUT_MS = parseInt(process.env.LEADLOADZ_TIMEOUT_MS || "30000", 10)
 
 if (isSetupMode()) {

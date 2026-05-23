@@ -107,7 +107,7 @@ Any MCP client that supports stdio transport can use:
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `LEADLOADZ_API_KEY` | **Yes** | — | Your Leadloadz API token |
-| `LEADLOADZ_API_BASE` | No | `https://www.leadloadz.com/api/mcp` | API base URL |
+| `LEADLOADZ_API_BASE` | No | `https://leadloadz.com/api/mcp` | API base URL (do not use `www` — redirects strip auth headers) |
 | `LEADLOADZ_TIMEOUT_MS` | No | `30000` | Request timeout in milliseconds |
 | `LEADLOADZ_DISABLE_TELEMETRY` | No | `0` | Set to `1` to disable anonymous usage telemetry |
 

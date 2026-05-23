@@ -5,6 +5,8 @@
  * so telemetry never blocks the server.
  */
 
+import { normalizeApiBase } from "./config.js"
+
 const PACKAGE_VERSION = "1.1.0"
 const TELEMETRY_TIMEOUT_MS = 5000
 
@@ -38,7 +40,7 @@ export class TelemetryTracker {
 
   constructor(sessionId: string, apiBase: string, hasApiKey: boolean) {
     this.sessionId = sessionId
-    this.apiBase = apiBase.replace(/\/+$/, "")
+    this.apiBase = normalizeApiBase(apiBase)
     this.hasApiKey = hasApiKey
     this.disabled = process.env.LEADLOADZ_DISABLE_TELEMETRY === "1"
   }
