@@ -2,7 +2,7 @@ import { DEFAULT_API_BASE, normalizeApiBase, PACKAGE_VERSION } from "../config.j
 
 describe("config", () => {
   it("reads package version from package.json", () => {
-    expect(PACKAGE_VERSION).toBe("1.1.2")
+    expect(PACKAGE_VERSION).toBe("1.1.3")
   })
 
   it("uses non-www production default", () => {

@@ -5,7 +5,7 @@
  * so telemetry never blocks the server.
  */
 
-import { normalizeApiBase, PACKAGE_VERSION } from "./config.js"
+import { getUserAgent, normalizeApiBase, PACKAGE_VERSION } from "./config.js"
 
 const TELEMETRY_TIMEOUT_MS = 5000
 
@@ -34,13 +34,15 @@ export function generateSessionId(): string {
 export class TelemetryTracker {
   private readonly sessionId: string
   private readonly apiBase: string
+  private readonly apiKey?: string
   private readonly hasApiKey: boolean
   private readonly disabled: boolean
 
-  constructor(sessionId: string, apiBase: string, hasApiKey: boolean) {
+  constructor(sessionId: string, apiBase: string, apiKey?: string) {
     this.sessionId = sessionId
     this.apiBase = normalizeApiBase(apiBase)
-    this.hasApiKey = hasApiKey
+    this.apiKey = apiKey
+    this.hasApiKey = Boolean(apiKey)
     this.disabled = process.env.LEADLOADZ_DISABLE_TELEMETRY === "1"
   }
 
@@ -63,12 +65,18 @@ export class TelemetryTracker {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), TELEMETRY_TIMEOUT_MS)
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "User-Agent": getUserAgent(),
+      "X-Source": "mcp-server",
+    }
+    if (this.apiKey) {
+      headers.Authorization = `Bearer ${this.apiKey}`
+    }
+
     fetch(`${this.apiBase}/telemetry`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Source": "mcp-server",
-      },
+      headers,
       body: JSON.stringify(payload),
       signal: controller.signal,
     })

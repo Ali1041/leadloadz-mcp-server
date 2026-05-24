@@ -1,5 +1,7 @@
-import { PACKAGE_VERSION } from "../config.js"
+import { getUserAgent, PACKAGE_VERSION } from "../config.js"
 import { TelemetryTracker, generateSessionId } from "../telemetry.js"
+
+const TEST_API_KEY = "test-api-key-123"
 
 // Mock global fetch
 global.fetch = jest.fn()
@@ -33,11 +35,14 @@ describe("TelemetryTracker", () => {
   })
 
   describe("track", () => {
-    it("should send a POST to the telemetry endpoint", () => {
-      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp", true)
+    it("should send a POST to the telemetry endpoint with auth headers", () => {
+      const tracker = new TelemetryTracker(
+        "session-123",
+        "https://api.test.com/mcp",
+        TEST_API_KEY
+      )
       tracker.track("server_started", { foo: "bar" })
 
-      // Fast-forward past the setTimeout in track()
       jest.advanceTimersByTime(100)
 
       expect(fetchMock).toHaveBeenCalledTimes(1)
@@ -47,6 +52,8 @@ describe("TelemetryTracker", () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${TEST_API_KEY}`,
+            "User-Agent": getUserAgent(),
             "X-Source": "mcp-server",
           },
         })
@@ -64,24 +71,30 @@ describe("TelemetryTracker", () => {
       expect(body.timestamp).toBeDefined()
     })
 
-    it("should not include API key in payload", () => {
-      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp", true)
-      tracker.track("tool_called", { key: "secret-api-key-123" })
+    it("should not include API key in payload body", () => {
+      const tracker = new TelemetryTracker(
+        "session-123",
+        "https://api.test.com/mcp",
+        TEST_API_KEY
+      )
+      tracker.track("tool_called", { key: "metadata-only" })
 
       jest.advanceTimersByTime(100)
 
       const callArgs = fetchMock.mock.calls[0]
       const body = JSON.parse(callArgs[1].body)
-      expect(body.metadata.key).toBe("secret-api-key-123")
-      // The metadata is passed through, but the tracker itself never has access to the key
+      expect(body.metadata.key).toBe("metadata-only")
       expect(body).not.toHaveProperty("api_key")
     })
 
     it("should silently fail on network errors", () => {
       fetchMock.mockRejectedValue(new Error("Network down"))
-      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp", true)
+      const tracker = new TelemetryTracker(
+        "session-123",
+        "https://api.test.com/mcp",
+        TEST_API_KEY
+      )
 
-      // Should not throw
       expect(() => tracker.track("server_started")).not.toThrow()
 
       jest.advanceTimersByTime(100)
@@ -89,20 +102,26 @@ describe("TelemetryTracker", () => {
     })
 
     it("should silently fail on timeout", () => {
-      fetchMock.mockImplementation(() => new Promise(() => {})) // never resolves
-      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp", true)
+      fetchMock.mockImplementation(() => new Promise(() => {}))
+      const tracker = new TelemetryTracker(
+        "session-123",
+        "https://api.test.com/mcp",
+        TEST_API_KEY
+      )
 
       tracker.track("server_started")
 
-      // Fast-forward past the 5-second timeout
       jest.advanceTimersByTime(6000)
 
       expect(fetchMock).toHaveBeenCalledTimes(1)
-      // No unhandled rejection should occur
     })
 
     it("should strip trailing slashes from apiBase", () => {
-      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp///", true)
+      const tracker = new TelemetryTracker(
+        "session-123",
+        "https://api.test.com/mcp///",
+        TEST_API_KEY
+      )
       tracker.track("server_started")
 
       jest.advanceTimersByTime(100)
@@ -113,19 +132,25 @@ describe("TelemetryTracker", () => {
       )
     })
 
-    it("should work with has_api_key=false", () => {
-      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp", false)
+    it("should work without an API key", () => {
+      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp")
       tracker.track("auth_failed")
 
       jest.advanceTimersByTime(100)
 
-      const body = JSON.parse(fetchMock.mock.calls[0][1].body)
+      const callArgs = fetchMock.mock.calls[0]
+      const body = JSON.parse(callArgs[1].body)
       expect(body.has_api_key).toBe(false)
+      expect(callArgs[1].headers).not.toHaveProperty("Authorization")
     })
 
     it("should not send when telemetry is disabled", () => {
       process.env.LEADLOADZ_DISABLE_TELEMETRY = "1"
-      const tracker = new TelemetryTracker("session-123", "https://api.test.com/mcp", true)
+      const tracker = new TelemetryTracker(
+        "session-123",
+        "https://api.test.com/mcp",
+        TEST_API_KEY
+      )
       tracker.track("server_started")
 
       jest.advanceTimersByTime(100)

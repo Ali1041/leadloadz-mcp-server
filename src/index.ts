@@ -98,7 +98,7 @@ try {
 
 // ─── Telemetry ───────────────────────────────────────────────────────────────
 const sessionId = generateSessionId()
-const telemetry = new TelemetryTracker(sessionId, API_BASE, true)
+const telemetry = new TelemetryTracker(sessionId, API_BASE, API_KEY)
 
 // ─── API Client ──────────────────────────────────────────────────────────────
 const apiClient = new LeadloadzAPIClient({
