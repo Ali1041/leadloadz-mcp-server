@@ -5,9 +5,8 @@
  * so telemetry never blocks the server.
  */
 
-import { normalizeApiBase } from "./config.js"
+import { normalizeApiBase, PACKAGE_VERSION } from "./config.js"
 
-const PACKAGE_VERSION = "1.1.0"
 const TELEMETRY_TIMEOUT_MS = 5000
 
 export interface TelemetryEvent {

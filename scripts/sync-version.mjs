@@ -1,0 +1,13 @@
+import { readFileSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..")
+const { version } = JSON.parse(readFileSync(join(root, "package.json"), "utf8"))
+
+writeFileSync(
+  join(root, "src", "version.ts"),
+  `/** Auto-generated from package.json — do not edit */\nexport const PACKAGE_VERSION = "${version}"\n`
+)
+
+console.log(`Synced PACKAGE_VERSION=${version}`)

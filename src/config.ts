@@ -1,4 +1,12 @@
+import { PACKAGE_VERSION } from "./version.js"
+
+export { PACKAGE_VERSION }
+
 export const DEFAULT_API_BASE = "https://leadloadz.com/api/mcp"
+
+export function getUserAgent(): string {
+  return `leadloadz-mcp-server/${PACKAGE_VERSION}`
+}
 
 /**
  * Normalize API base URL. Strips trailing slashes and rewrites www.leadloadz.com

@@ -40,7 +40,7 @@ import type { Tool } from "./types.js"
 import { redirectConsoleToStderr, stderrLog, sanitizeFatalError } from "./logger.js"
 import { isSetupMode, showSetupCTA, runSetupWizard } from "./onboarding.js"
 import { TelemetryTracker, generateSessionId } from "./telemetry.js"
-import { DEFAULT_API_BASE, normalizeApiBase } from "./config.js"
+import { DEFAULT_API_BASE, normalizeApiBase, PACKAGE_VERSION } from "./config.js"
 
 // ─── Redirect stdout pollution to stderr BEFORE anything else ─────────────────
 redirectConsoleToStderr()
@@ -183,7 +183,7 @@ async function healthCheck(): Promise<void> {
 const server = new Server(
   {
     name: "leadloadz-mcp",
-    version: "1.1.0",
+    version: PACKAGE_VERSION,
   },
   {
     capabilities: {

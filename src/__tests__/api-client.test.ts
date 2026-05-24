@@ -1,4 +1,5 @@
 import { LeadloadzAPIClient } from "../api-client.js"
+import { getUserAgent } from "../config.js"
 import { MCPErrorCode } from "../types.js"
 
 // Mock global fetch
@@ -91,7 +92,7 @@ describe("LeadloadzAPIClient", () => {
       const callArgs = (fetch as jest.Mock).mock.calls[0]
       expect(callArgs[1].headers).toHaveProperty(
         "User-Agent",
-        "leadloadz-mcp-server/1.1.0"
+        getUserAgent()
       )
     })
 

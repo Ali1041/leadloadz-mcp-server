@@ -1,5 +1,6 @@
 import type { APIClientConfig, Tool, ServerInfo, ToolCallResponse, JsonRpcResponse } from "./types.js"
 import { MCPErrorCode } from "./types.js"
+import { getUserAgent } from "./config.js"
 
 /**
  * Leadloadz API client.
@@ -21,7 +22,7 @@ export class LeadloadzAPIClient {
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.config.apiKey}`,
-      "User-Agent": "leadloadz-mcp-server/1.1.0",
+      "User-Agent": getUserAgent(),
       "X-Source": "mcp-server",
     }
   }

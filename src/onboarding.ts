@@ -1,6 +1,7 @@
 import { spawn } from "child_process"
 import * as readline from "readline"
 import { stderrLog } from "./logger.js"
+import { getUserAgent } from "./config.js"
 
 const SIGNUP_URL =
   "https://www.leadloadz.com/signup?ref=mcp&utm_source=mcp-server&utm_medium=cli&utm_campaign=mcp-launch"
@@ -84,7 +85,7 @@ async function validateApiKey(
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "User-Agent": "leadloadz-mcp-server/1.1.0",
+        "User-Agent": getUserAgent(),
         "X-Source": "mcp-server",
       },
       signal: controller.signal,

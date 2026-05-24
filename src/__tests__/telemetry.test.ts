@@ -1,3 +1,4 @@
+import { PACKAGE_VERSION } from "../config.js"
 import { TelemetryTracker, generateSessionId } from "../telemetry.js"
 
 // Mock global fetch
@@ -55,7 +56,7 @@ describe("TelemetryTracker", () => {
       const body = JSON.parse(callArgs[1].body)
       expect(body).toMatchObject({
         event: "server_started",
-        package_version: "1.1.0",
+        package_version: PACKAGE_VERSION,
         session_id: "session-123",
         has_api_key: true,
         metadata: { foo: "bar" },
