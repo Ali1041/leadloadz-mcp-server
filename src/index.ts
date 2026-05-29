@@ -120,14 +120,16 @@ async function fetchTools(): Promise<void> {
     cachedTools = [
       {
         name: "search_leads",
-        description: "Search indexed B2B contacts by role, company, location, or technology. Read-only; returns verified leads with deliverability scores. Requires API key. Rate limit: 30/min per user. Use verify_email after discovery to confirm deliverability before outreach.",
+        description: "Search indexed B2B contacts by role, company, location, or technology. Read-only; returns verified leads with deliverability scores. Requires API key. Rate limit: 30/min per user. Use verify_email after discovery to confirm deliverability before outreach. Supports pagination: pass search_id from a previous result to fetch the next page without consuming additional quota. Sessions expire after 5 minutes.",
         inputSchema: {
           type: "object" as const,
           properties: {
-            query: { type: "string", description: "Specific natural-language search query. Narrow criteria yield better precision (e.g., 'CTOs at Series A B2B SaaS in London')" },
-            limit: { type: "number", description: "Maximum results to return. Default: 10. Cap: 50. Higher values consume more quota.", minimum: 1, maximum: 50 }
+            query: { type: "string", description: "Specific natural-language search query. Narrow criteria yield better precision (e.g., 'CTOs at Series A B2B SaaS in London'). Required for new searches; omit when paginating with search_id." },
+            limit: { type: "number", description: "Maximum results to return. Default: 10. Cap: 50. Higher values consume more quota.", minimum: 1, maximum: 50 },
+            offset: { type: "number", description: "Number of results to skip for pagination. Default: 0.", minimum: 0 },
+            search_id: { type: "string", description: "Session ID from a previous search_leads call. When provided, results are fetched from cache and no quota is consumed. Session expires after 5 minutes." }
           },
-          required: ["query"]
+          required: []
         }
       },
       {
